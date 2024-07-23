@@ -1,0 +1,23 @@
+{
+    "name": "Fetch Data Extension",
+    "version": "1.0",
+    "description": "Fetch data and download as JSON",
+    "manifest_version": 3,
+    "permissions": [
+      "cookies",
+      "storage",
+      "activeTab",
+      "downloads",
+      "https://partner.urbansportsclub.com/"
+    ],
+    "host_permissions": [
+      "https://partner.urbansportsclub.com/*"
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html"
+    }
+  }
+  
