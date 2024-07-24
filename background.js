@@ -57,31 +57,50 @@ function jsonToCSV(jsonData) {
     return '';
   }
 
-  const headers = Object.keys(jsonData[0]);
+  const headerMapping = {
+    'service_type_id': 'Type of activity',
+    'check_in_system': 'check-in type',
+    'state': 'status'
+  };
+
+  const headers = Object.keys(jsonData[0]).map(header => headerMapping[header] || header);
   const csvRows = [];
 
   // Add header row
   csvRows.push(headers.join(','));
 
-  // Mapping function for membership_plan_type_id
+  // Mapping functions
   const mapMembershipPlanType = (id) => {
-    const mapping = {
-      1: 'S',
-      2: 'M',
-      3: 'L',
-      4: 'XL'
-    };
-    return mapping[id] || id; // Return the mapped value if exists, otherwise return the original id
+    const mapping = { 1: 'S', 2: 'M', 3: 'L', 4: 'XL' };
+    return mapping[id] || id;
+  };
+
+  const mapServiceType = (id) => {
+    return id === 0 ? 'Course' : `UNKNOWN_VALUE_[${id}]`;
+  };
+
+  const mapCheckInSystem = (id) => {
+    return id === 2 ? 'App' : `UNKNOWN_VALUE_[${id}]`;
+  };
+
+  const mapState = (state) => {
+    return state === 'done' ? 'check-in' : `UNKNOWN_VALUE_[${state}]`;
   };
 
   // Add data rows
   for (const row of jsonData) {
-    const values = headers.map(header => {
-      let value = row[header];
+    const values = Object.keys(row).map(key => {
+      let value = row[key];
       
-      // Apply mapping for membership_plan_type_id
-      if (header === 'membership_plan_type_id') {
+      // Apply mappings
+      if (key === 'membership_plan_type_id') {
         value = mapMembershipPlanType(value);
+      } else if (key === 'service_type_id') {
+        value = mapServiceType(value);
+      } else if (key === 'check_in_system') {
+        value = mapCheckInSystem(value);
+      } else if (key === 'state') {
+        value = mapState(value);
       }
       
       const escaped = ('' + value).replace(/"/g, '\\"');
